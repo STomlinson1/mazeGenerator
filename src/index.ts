@@ -10,6 +10,10 @@ import {
 	Mouse
 } from 'matter-js';
 
+// Constants
+const width = 800;
+const height = 600;
+
 // Create engine and world object.
 const engine = Engine.create();
 const { world } = engine;
@@ -19,8 +23,10 @@ const render = Render.create({
 	element: document.body,
 	engine: engine,
 	options: {
-		width: 800,
-		height: 600
+		width: width,
+		height: height,
+		// Shows shapes with color
+		wireframes: false
 	}
 });
 
@@ -47,4 +53,26 @@ const walls = [
 // Add walls to world
 World.add(world, walls);
 
-World.add(world, Bodies.rectangle(300, 300, 50, 50));
+// Generate Random Shapes
+for (let i = 0; i < 30; i++) {
+	if (Math.random() < 0.3) {
+		World.add(
+			world,
+			Bodies.rectangle(Math.random() * width, Math.random() * height, 50, 50)
+		);
+	} else if (Math.random() < 0.7) {
+		World.add(
+			world,
+			Bodies.trapezoid(Math.random() * width, Math.random() * height, 50, 50, 1)
+		);
+	} else {
+		World.add(
+			world,
+			Bodies.circle(Math.random() * width, Math.random() * height, 50, {
+				render: {
+					fillStyle: 'red'
+				}
+			})
+		);
+	}
+}
