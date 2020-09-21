@@ -6,7 +6,7 @@ import { Engine, Render, Runner, World, Bodies } from 'matter-js';
 const width: number = 600;
 const height: number = 600;
 const wallWidth: number = 40;
-const cells = 5;
+const cells = 3;
 
 // Create engine and world object.
 const engine = Engine.create();
@@ -77,3 +77,61 @@ const horizontals = Array(cells - 1).fill(null).map(() => Array(cells).fill(fals
 console.log('grid', grid);
 console.log('verticals', verticals);
 console.log('horizontals', horizontals);
+
+// Shuffle Method
+// takes an array and reorders elements inside of it
+const shuffle = (arr: [number, number, string][]) => {
+	let counter: number = arr.length;
+
+	while (counter > 0) {
+		const index = Math.floor(Math.random() * counter);
+
+		counter--;
+
+		const temp = arr[counter];
+		arr[counter] = arr[index];
+		arr[index] = temp;
+	}
+
+	return arr;
+};
+
+// Pick random starting point
+const startRow = Math.floor(Math.random() * cells);
+const startColumn = Math.floor(Math.random() * cells);
+
+const stepThroughCell = (row: number, column: number) => {
+	// If i have visited the cell at [row,column], then return.
+	if (grid[row][column]) {
+		return;
+	}
+	// Mark this cell as being visited.
+	grid[row][column] = true;
+	// Generate list of neighbors up, right, down, left
+	const neighbors = shuffle([
+		[ row - 1, column, 'up' ],
+		[ row, column + 1, 'right' ],
+		[ row + 1, column, 'down' ],
+		[ row, column - 1, 'left' ]
+	]);
+	console.log(neighbors);
+	// For each neighbor...
+	for (let neighbor of neighbors) {
+		const [ nextRow, nextColumn, direction ] = neighbor;
+		// See if neighbor is out of bounds
+		if (nextRow < 0 || nextRow >= cells || nextColumn < 0 || nextColumn >= cells) {
+			continue;
+		}
+		// If we have visited that neighbor, continue to next neighbor
+		if (grid[nextRow][nextColumn]) {
+			continue;
+		}
+
+		// Remove a wall from either horizontals or verticals
+	}
+
+	// Visit that next cell
+};
+
+stepThroughCell(1, 1);
+// console.log(grid);
