@@ -6,6 +6,7 @@ import { Engine, Render, Runner, World, Bodies } from 'matter-js';
 const width: number = 600;
 const height: number = 600;
 const wallWidth: number = 40;
+const cells = 5;
 
 // Create engine and world object.
 const engine = Engine.create();
@@ -64,13 +65,15 @@ World.add(world, walls);
   3. For each null value, return an array of length 3 with false values.
   4. Create 2d array to track horizontal and vertical walls.
 */
-const grid: boolean[][] = Array(3).fill(null).map(() => Array(3).fill(false));
+const grid: boolean[][] = Array(cells)
+	.fill(null)
+	.map(() => Array(cells).fill(false));
 
 // Init verticals array.
-const verticals = Array(3).fill(null).map(() => Array(2).fill(false));
+const verticals = Array(cells).fill(null).map(() => Array(cells - 1).fill(false));
 // Init horizontals array.
-const horizontals = Array(2).fill(null).map(() => Array(3).fill(false));
+const horizontals = Array(cells - 1).fill(null).map(() => Array(cells).fill(false));
 
-console.log(grid);
-console.log(verticals);
-console.log(horizontals);
+console.log('grid', grid);
+console.log('verticals', verticals);
+console.log('horizontals', horizontals);
