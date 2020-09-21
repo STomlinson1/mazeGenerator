@@ -114,7 +114,8 @@ const stepThroughCell = (row: number, column: number) => {
 		[ row + 1, column, 'down' ],
 		[ row, column - 1, 'left' ]
 	]);
-	console.log(neighbors);
+	// console.log(neighbors);
+
 	// For each neighbor...
 	for (let neighbor of neighbors) {
 		const [ nextRow, nextColumn, direction ] = neighbor;
@@ -128,10 +129,20 @@ const stepThroughCell = (row: number, column: number) => {
 		}
 
 		// Remove a wall from either horizontals or verticals
-	}
+		if (direction === 'left') {
+			verticals[row][column - 1] = true;
+		} else if (direction === 'right') {
+			verticals[row][column] = true;
+		} else if (direction === 'up') {
+			horizontals[row - 1][column] = true;
+		} else if (direction === 'down') {
+			horizontals[row][column] = true;
+		}
 
-	// Visit that next cell
+		// Recurse the next cell to ensure we walk through the entire maze.
+		stepThroughCell(nextRow, nextColumn);
+	}
 };
 
-stepThroughCell(1, 1);
-// console.log(grid);
+stepThroughCell(startRow, startColumn);
+console.log(verticals, horizontals);
