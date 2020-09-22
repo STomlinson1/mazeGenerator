@@ -11,11 +11,12 @@ const canvas: HTMLCanvasElement = document.getElementById(
 const width: number = window.innerWidth;
 const height: number = window.innerHeight;
 const wallWidth: number = 2;
-const cells = 6;
+// The number of rows
 const cellsHorizontal: number = 4;
+// The number of columns
 const cellsVertical: number = 3;
 
-const unitLength = width / cells;
+// const unitLength = width / cells;
 
 const unitLengthX: number = width / cellsHorizontal;
 const unitLengthY: number = height / cellsVertical;
@@ -74,19 +75,23 @@ World.add(world, walls);
 // Init a 3x3 Grid with every value initialized to false.
 /*
   Steps
-  1. Init an array of size 3,
+  1. Init an array of size N,
   2. Fill array with null values,
-  3. For each null value, return an array of length 3 with false values.
+  3. For each null value, return an array of length N with false values.
   4. Create 2d array to track horizontal and vertical walls.
 */
-const grid: boolean[][] = Array(cells)
+const grid: boolean[][] = Array(cellsVertical)
 	.fill(null)
-	.map(() => Array(cells).fill(false));
+	.map(() => Array(cellsHorizontal).fill(false));
 
 // Init verticals array.
-const verticals = Array(cells).fill(null).map(() => Array(cells - 1).fill(false));
+const verticals = Array(cellsVertical)
+	.fill(null)
+	.map(() => Array(cellsHorizontal - 1).fill(false));
 // Init horizontals array.
-const horizontals = Array(cells - 1).fill(null).map(() => Array(cells).fill(false));
+const horizontals = Array(cellsVertical - 1)
+	.fill(null)
+	.map(() => Array(cellsHorizontal).fill(false));
 
 console.log('grid', grid);
 console.log('verticals', verticals);
@@ -111,8 +116,8 @@ const shuffle = (arr: [number, number, string][]) => {
 };
 
 // Pick random starting point
-const startRow = Math.floor(Math.random() * cells);
-const startColumn = Math.floor(Math.random() * cells);
+const startRow = Math.floor(Math.random() * cellsVertical);
+const startColumn = Math.floor(Math.random() * cellsHorizontal);
 
 const stepThroughCell = (row: number, column: number) => {
 	// If i have visited the cell at [row,column], then return.
@@ -134,7 +139,12 @@ const stepThroughCell = (row: number, column: number) => {
 	for (let neighbor of neighbors) {
 		const [ nextRow, nextColumn, direction ] = neighbor;
 		// See if neighbor is out of bounds
-		if (nextRow < 0 || nextRow >= cells || nextColumn < 0 || nextColumn >= cells) {
+		if (
+			nextRow < 0 ||
+			nextRow >= cellsVertical ||
+			nextColumn < 0 ||
+			nextColumn >= cellsHorizontal
+		) {
 			continue;
 		}
 		// If we have visited that neighbor, continue to next neighbor
@@ -169,9 +179,9 @@ horizontals.forEach((row, rowIndex) => {
 
 		// Calulations for walls
 		const wall = Bodies.rectangle(
-			columnIndex * unitLength + unitLength / 2,
-			rowIndex * unitLength + unitLength,
-			unitLength,
+			columnIndex * unitLengthX + unitLengthX / 2,
+			rowIndex * unitLengthY + unitLengthY,
+			unitLengthX,
 			10,
 			{
 				isStatic: true,
@@ -190,10 +200,10 @@ verticals.forEach((row, rowIndex) => {
 		}
 
 		const wall = Bodies.rectangle(
-			columnIndex * unitLength + unitLength,
-			rowIndex * unitLength + unitLength / 2,
+			columnIndex * unitLengthX + unitLengthX,
+			rowIndex * unitLengthY + unitLengthY / 2,
 			10,
-			unitLength,
+			unitLengthY,
 			{
 				isStatic: true,
 				label: 'wall'
@@ -205,10 +215,10 @@ verticals.forEach((row, rowIndex) => {
 
 // Create goal
 const goal = Bodies.rectangle(
-	width - unitLength / 2,
-	height - unitLength / 2,
-	unitLength * 0.7,
-	unitLength * 0.7,
+	width - unitLengthX / 2,
+	height - unitLengthY / 2,
+	unitLengthX * 0.7,
+	unitLengthY * 0.7,
 	{
 		isStatic: true,
 		label: 'goal'
@@ -218,7 +228,8 @@ const goal = Bodies.rectangle(
 World.add(world, goal);
 
 // Ball
-const ball = Bodies.circle(unitLength / 2, unitLength / 2, unitLength / 4, {
+const ballRadius = Math.min(unitLengthX, unitLengthY) / 4;
+const ball = Bodies.circle(unitLengthX / 2, unitLengthY / 2, ballRadius, {
 	label: 'ball'
 });
 
