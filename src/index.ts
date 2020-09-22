@@ -1,6 +1,6 @@
 import './scss/index.scss';
 
-import { Engine, Render, Runner, World, Bodies, Body } from 'matter-js';
+import { Engine, Render, Runner, World, Bodies, Body, Events } from 'matter-js';
 
 //DOM elements
 const canvas: HTMLCanvasElement = document.getElementById(
@@ -8,15 +8,22 @@ const canvas: HTMLCanvasElement = document.getElementById(
 ) as HTMLCanvasElement;
 
 // Constants
-const width: number = 800;
-const height: number = 800;
+const width: number = window.innerWidth;
+const height: number = window.innerHeight;
 const wallWidth: number = 2;
-const cells = 10;
+const cells = 6;
+const cellsHorizontal: number = 4;
+const cellsVertical: number = 3;
 
 const unitLength = width / cells;
 
+const unitLengthX: number = width / cellsHorizontal;
+const unitLengthY: number = height / cellsVertical;
+
 // Create engine and world object.
 const engine = Engine.create();
+// Disable gravity
+engine.world.gravity.y = 0;
 const { world } = engine;
 
 // Create render object to show content on the screen.
@@ -167,7 +174,8 @@ horizontals.forEach((row, rowIndex) => {
 			unitLength,
 			10,
 			{
-				isStatic: true
+				isStatic: true,
+				label: 'wall'
 			}
 		);
 
@@ -187,7 +195,8 @@ verticals.forEach((row, rowIndex) => {
 			10,
 			unitLength,
 			{
-				isStatic: true
+				isStatic: true,
+				label: 'wall'
 			}
 		);
 		World.add(world, wall);
@@ -201,7 +210,8 @@ const goal = Bodies.rectangle(
 	unitLength * 0.7,
 	unitLength * 0.7,
 	{
-		isStatic: true
+		isStatic: true,
+		label: 'goal'
 	}
 );
 
@@ -209,7 +219,7 @@ World.add(world, goal);
 
 // Ball
 const ball = Bodies.circle(unitLength / 2, unitLength / 2, unitLength / 4, {
-	isStatic: false
+	label: 'ball'
 });
 
 World.add(world, ball);
@@ -231,4 +241,24 @@ document.addEventListener('keydown', (event) => {
 	if (keyCode === 68) {
 		Body.setVelocity(ball, { x: x + 5, y: y });
 	}
+});
+
+// Win Condition
+
+Events.on(engine, 'collisionStart', (event) => {
+	event.pairs.forEach((collision) => {
+		const labels = [ 'ball', 'goal' ];
+
+		if (
+			labels.includes(collision.bodyA.label) &&
+			labels.includes(collision.bodyB.label)
+		) {
+			world.gravity.y = 1;
+			world.bodies.forEach((body) => {
+				if (body.label === 'wall') {
+					Body.setStatic(body, false);
+				}
+			});
+		}
+	});
 });
