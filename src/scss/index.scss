@@ -27,3 +27,22 @@ ul {
 	margin: 0 auto;
 	padding: 0 2rem;
 }
+
+h1 {
+	color: white;
+	font-size: 4rem;
+}
+
+.winner {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	z-index: 3;
+	height: 100vh;
+	width: 100vw;
+
+	&.hidden {
+		display: none;
+	}
+}
