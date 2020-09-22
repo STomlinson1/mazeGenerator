@@ -2,3 +2,5 @@ node_modules
 development
 .cache
 dist
+# Local Netlify folder
+.netlify
