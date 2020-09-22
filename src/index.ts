@@ -1,12 +1,19 @@
 import './scss/index.scss';
 
-import { Engine, Render, Runner, World, Bodies } from 'matter-js';
+import { Engine, Render, Runner, World, Bodies, Body } from 'matter-js';
+
+//DOM elements
+const canvas: HTMLCanvasElement = document.getElementById(
+	'world'
+) as HTMLCanvasElement;
 
 // Constants
-const width: number = 600;
-const height: number = 600;
-const wallWidth: number = 40;
-const cells = 3;
+const width: number = 800;
+const height: number = 800;
+const wallWidth: number = 2;
+const cells = 10;
+
+const unitLength = width / cells;
 
 // Create engine and world object.
 const engine = Engine.create();
@@ -14,7 +21,7 @@ const { world } = engine;
 
 // Create render object to show content on the screen.
 const render = Render.create({
-	element: document.body,
+	canvas: canvas,
 	engine: engine,
 	options: {
 		width: width,
@@ -145,4 +152,83 @@ const stepThroughCell = (row: number, column: number) => {
 };
 
 stepThroughCell(startRow, startColumn);
-console.log(verticals, horizontals);
+
+// Iterate over the verticals and horizontals array and draw walls to the canvas
+horizontals.forEach((row, rowIndex) => {
+	row.forEach((open, columnIndex) => {
+		if (open) {
+			return;
+		}
+
+		// Calulations for walls
+		const wall = Bodies.rectangle(
+			columnIndex * unitLength + unitLength / 2,
+			rowIndex * unitLength + unitLength,
+			unitLength,
+			10,
+			{
+				isStatic: true
+			}
+		);
+
+		World.add(world, wall);
+	});
+});
+
+verticals.forEach((row, rowIndex) => {
+	row.forEach((open, columnIndex) => {
+		if (open) {
+			return;
+		}
+
+		const wall = Bodies.rectangle(
+			columnIndex * unitLength + unitLength,
+			rowIndex * unitLength + unitLength / 2,
+			10,
+			unitLength,
+			{
+				isStatic: true
+			}
+		);
+		World.add(world, wall);
+	});
+});
+
+// Create goal
+const goal = Bodies.rectangle(
+	width - unitLength / 2,
+	height - unitLength / 2,
+	unitLength * 0.7,
+	unitLength * 0.7,
+	{
+		isStatic: true
+	}
+);
+
+World.add(world, goal);
+
+// Ball
+const ball = Bodies.circle(unitLength / 2, unitLength / 2, unitLength / 4, {
+	isStatic: false
+});
+
+World.add(world, ball);
+
+// Add event Listeners for moving ball around canvas.
+document.addEventListener('keydown', (event) => {
+	const { keyCode } = event;
+	const { x, y } = ball.velocity;
+
+	if (keyCode === 87) {
+		Body.setVelocity(ball, { x: x, y: y - 5 });
+	}
+	if (keyCode === 83) {
+		Body.setVelocity(ball, { x: x, y: y + 5 });
+	}
+	if (keyCode === 65) {
+		Body.setVelocity(ball, { x: x - 5, y: y });
+	}
+	if (keyCode === 68) {
+		Body.setVelocity(ball, { x: x + 5, y: y });
+	}
+});
